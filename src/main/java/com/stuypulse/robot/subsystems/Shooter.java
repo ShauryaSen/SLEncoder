@@ -38,15 +38,6 @@ public class Shooter extends SubsystemBase {
 
     public Shooter(SmartBoolean usingSLEncoder) {
         this.usingSLEncoder = usingSLEncoder;
-
-        if (usingSLEncoder.get()) {
-            slShooterFollowerEncoder = new SLEncoder(new CANSparkMax(SHOOTER_MOTOR, MotorType.kBrushless));
-            slShooterFollowerEncoder = new SLEncoder(new CANSparkMax(SHOOTER_MOTOR, MotorType.kBrushless));
-        } else {
-            shooterMotorEncoder = shooterMotor.getEncoder();
-            shooterFollowerEncoder = shooterFollower.getEncoder();
-        }
-
         targetRPM = new SmartNumber("Shooter/TargetRPM", 0.0);
 
         shooterMotor = new CANSparkMax(SHOOTER_MOTOR, MotorType.kBrushless);
@@ -55,6 +46,14 @@ public class Shooter extends SubsystemBase {
         shooterFollower = new CANSparkMax(SHOOTER_FOLLOWER, MotorType.kBrushless);
         ShooterFollowerConfig.configure(shooterFollower);
 
+        // create SLEncoders
+        slShooterMotorEncoder = new SLEncoder(shooterMotor);
+        slShooterFollowerEncoder = new SLEncoder(shooterFollower);
+
+        // create rev encoders
+        shooterMotorEncoder = shooterMotor.getEncoder();
+        shooterFollowerEncoder = shooterFollower.getEncoder();
+                        
         shooterController = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD)
             .add(new Feedforward.Flywheel(ShooterFF.kS, ShooterFF.kV, ShooterFF.kA ).velocity());
     }
@@ -63,9 +62,9 @@ public class Shooter extends SubsystemBase {
         targetRPM.set(RPM);
     }
 
-    public double getShooterRPM() {
+    public double getRPM() {
         double shooterRPM;
-        if (usingSLEncoder) {
+        if (usingSLEncoder.get()) {
             shooterRPM = (slShooterMotorEncoder.getVelocity() + slShooterFollowerEncoder.getVelocity()) / 2;
         } else {
             shooterRPM = (shooterMotorEncoder.getVelocity() + shooterFollowerEncoder.getVelocity()) / 2;
@@ -74,23 +73,22 @@ public class Shooter extends SubsystemBase {
         return shooterRPM;
     }
 
-    private double getShooterVoltage() {
-        return shooterController.update(targetRPM.get(), getShooterRPM());
-    }
+    // private double getShooterVoltage() {
+    //     return shooterController.update(targetRPM.get(), getShooterRPM());
+    // }
 
-    public void setShooterVoltage(double voltage) {
+    public void setVoltage(double voltage) {
         shooterMotor.setVoltage(voltage);
         shooterFollower.setVoltage(voltage);
     }    
 
     @Override
     public void periodic() {
-        double shooterVoltage = getShooterVoltage();
+        setVoltage(controller.update(targetRPM.get(), getRPM());
+        SmartDashboard.putNumber("Shooter/Applied Voltage", controller.getOutput());
 
-        setShooterVoltage(shooterVoltage);
         SmartDashboard.putNumber("Shooter/Shooter Voltage", shooterVoltage);
         SmartDashboard.putNumber("Shooter/Shooter RPM", getShooterRPM());
-        SmartDashboard.putBoolean("Shooter/Using SLEncoder", usingSLEncoder.get());
 
     }
 }

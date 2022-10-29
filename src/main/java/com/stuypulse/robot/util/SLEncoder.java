@@ -79,7 +79,6 @@ public class SLEncoder {
         }
     }
 
-
     /* Returns the current position in rotations */
     public synchronized double getPosition() {
         return position;
