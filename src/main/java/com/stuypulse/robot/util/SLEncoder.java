@@ -81,6 +81,14 @@ public class SLEncoder {
         return position;
     }
 
+    /**
+   * Set the position of the encoder. By default the units are 'rotations' and can be changed by a
+   * scale factor using setPositionConversionFactor().
+   */
+    public void setPosition(double position) {
+        this.position = position;
+    }
+
     /* Returns the current velocity in rotations/minute. */
     public synchronized double getVelocity() {
         return velocity;
