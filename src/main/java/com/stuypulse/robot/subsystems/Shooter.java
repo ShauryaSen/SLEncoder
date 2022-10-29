@@ -32,6 +32,7 @@ public class Shooter extends SubsystemBase {
     // Stuylib encoders
     private SLEncoder slShooterFollowerEncoder;
     private SLEncoder slShooterMotorEncoder;
+    private SLEncoder slFeederMotorEncoder;
 
     private Controller shooterController;
     private Controller feederController;
@@ -42,12 +43,14 @@ public class Shooter extends SubsystemBase {
     public Shooter(SLEncoder slEncoder) {
         slShooterFollowerEncoder = slEncoder;
         slShooterMotorEncoder = slEncoder; 
+        slFeederMotorEncoder = slEncoder;
         setup();
     }
 
-    public Shooter(RelativeEncoder encoder) {
-        shooterMotorEncoder = encoder; //shooterMotor.getEncoder();
-        shooterFollowerEncoder = encoder; //shooterFollower.getEncoder();
+    public Shooter() {
+        shooterMotorEncoder = shooterMotor.getEncoder();
+        shooterFollowerEncoder = shooterFollower.getEncoder();
+        feederMotorEncoder = feederMotor.getEncoder();
         setup();
     }
 
@@ -67,8 +70,6 @@ public class Shooter extends SubsystemBase {
 
         feederMotor = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
         FeederMotorConfig.configure(feederMotor);
-        
-        feederMotorEncoder = feederMotor.getEncoder();
     }
 
     public void setTargetRPM(double RPM){
@@ -87,7 +88,13 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getFeederRPM() {
-        return feederMotorEncoder.getVelocity();
+        double feederRPM;
+        if (shooterMotorEncoder != null) {
+            feederRPM = feederMotorEncoder.getVelocity();
+        } else {
+            feederRPM = slFeederMotorEncoder.getVelocity();
+        }
+        return feederRPM;
     }
 
     private double getShooterVoltage() {
