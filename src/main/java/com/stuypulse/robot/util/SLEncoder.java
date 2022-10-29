@@ -29,19 +29,21 @@ public class SLEncoder {
     private double position = 0.0;
     private double velocity = 0.0;
 
+
     /**
-   * Creates a new SLEncoder using a default set of parameters.
-   */
-    public SLEncoder() {
-        this(0.0, 5);
+    * Creates a new SparkMaxDerivedVelocityController using a default set of parameters.
+    */
+    public SparkMaxDerivedVelocityController(CANSparkMax sparkMax) {
+        this(sparkMax, 0.02, 5);
     }
-    
-    /* Creates a new SLEncoder. */
-    public SLEncoder(double periodSeconds, int averagingTaps) {
-        // Epic StuyLib Encoder Reveal
-        sparkMax = new CANSparkMax(12, MotorType.kBrushless);
-        sparkMax.setSmartCurrentLimit(30);
-        sparkMax.enableVoltageCompensation(12.0);
+
+    /** Creates a new SparkMaxDerivedVelocityController. */
+    public SparkMaxDerivedVelocityController(CANSparkMax sparkMax,
+
+        double periodSeconds, int averagingTaps) {
+        this.sparkMax = sparkMax;
+
+        /* Do not change the position conversion factor. */
         sparkMax.getEncoder().setPositionConversionFactor(1.0);
         int periodMs = (int) (periodSeconds * 1000);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, periodMs);

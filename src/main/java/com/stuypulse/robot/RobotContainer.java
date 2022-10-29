@@ -17,15 +17,13 @@ import com.stuypulse.robot.util.SLEncoder;
 
 public class RobotContainer {
 
-    private SLEncoder slEncoder = new SLEncoder();
-
     // Gamepads
     public final Gamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
     public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
     
     // Subsystem (SLencoder and rev encoder)
-    public final Shooter slShooter = new Shooter(slEncoder);
-    public final Shooter shooter = new Shooter();
+    public final Shooter slShooter = new Shooter(new SmartBoolean("Shooter/UsingSLEncoder", true));
+    public final Shooter shooter = new Shooter(new SmartBoolean("Shooter/UsingSLEncoder", false));
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
 
