@@ -33,12 +33,12 @@ public class SLEncoder {
     /**
     * Creates a new SparkMaxDerivedVelocityController using a default set of parameters.
     */
-    public SparkMaxDerivedVelocityController(CANSparkMax sparkMax) {
+    public SLEncoder(CANSparkMax sparkMax) {
         this(sparkMax, 0.02, 5);
     }
 
     /** Creates a new SparkMaxDerivedVelocityController. */
-    public SparkMaxDerivedVelocityController(CANSparkMax sparkMax,
+    public SLEncoder(CANSparkMax sparkMax,
 
         double periodSeconds, int averagingTaps) {
         this.sparkMax = sparkMax;
