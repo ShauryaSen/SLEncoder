@@ -1,13 +1,14 @@
+package com.stuypulse.robot.util;
+
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.hal.CANData;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Notifier;
 
@@ -18,14 +19,12 @@ public class SLEncoder {
     private static final int deviceType = 2; // Spark Max
     private static final int apiId = 98; // Periodic status 2
   
-    private final CANSparkMax sparkMax;
+    private CANSparkMax sparkMax;
     private final CAN canInterface;
     private final LinearFilter velocityFilter;
     private final Notifier notifier;
   
     private boolean firstCycle = true;
-    private boolean enabled = false;
-    private double ffVolts = 0.0;
     private double timestamp = 0.0;
     private double position = 0.0;
     private double velocity = 0.0;
@@ -33,13 +32,16 @@ public class SLEncoder {
     /**
    * Creates a new SLEncoder using a default set of parameters.
    */
-  public SLEncoder(CANSparkMax sparkMax) {
-    this(sparkMax, 0.02, 5);
-  }
-
+    public SLEncoder() {
+        this(0.0, 5);
+    }
+    
     /* Creates a new SLEncoder. */
-    public SLEncoder(CANSparkMax sparkMax, double periodSeconds, int averagingTaps) {
-        this.sparkMax = sparkMax;
+    public SLEncoder(double periodSeconds, int averagingTaps) {
+        // Epic StuyLib Encoder Reveal
+        sparkMax = new CANSparkMax(12, MotorType.kBrushless);
+        sparkMax.setSmartCurrentLimit(30);
+        sparkMax.enableVoltageCompensation(12.0);
         sparkMax.getEncoder().setPositionConversionFactor(1.0);
         int periodMs = (int) (periodSeconds * 1000);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, periodMs);

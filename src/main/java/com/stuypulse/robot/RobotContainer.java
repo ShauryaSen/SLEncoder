@@ -1,27 +1,31 @@
-/************************ PROJECT PHIL ************************/
+/**************************************************************/
 /* Copyright (c) 2022 StuyPulse Robotics. All rights reserved.*/
 /* This work is licensed under the terms of the MIT license.  */
 /**************************************************************/
 
 package com.stuypulse.robot;
-
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.constants.Ports;
+import com.stuypulse.robot.subsystems.Shooter;
 import com.stuypulse.stuylib.input.Gamepad;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import com.stuypulse.robot.util.SLEncoder;
+
 
 public class RobotContainer {
+
+    private SLEncoder slEncoder = new SLEncoder();
 
     // Gamepads
     public final Gamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
     public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
     
-    // Subsystem
-
+    // Subsystem (SLencoder and rev encoder)
+    public final Shooter slShooter = new Shooter(slEncoder);
+    public final Shooter shooter = new Shooter();
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
 
